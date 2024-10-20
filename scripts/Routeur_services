@@ -1,0 +1,50 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 1.48.94.98/27 dev eth0
+ip link set dev eth1 up
+ip addr add 1.48.94.162/27 dev eth1
+ip link set dev eth2 up
+ip addr add 1.48.94.225/27 dev eth2
+
+
+#Routage Statique
+#ip route add 1.48.94.0/27 via 1.48.94.97
+#ip route add 1.48.94.32/27 via 1.48.94.97
+#ip route add 1.48.94.64/27 via 1.48.94.97
+#ip route add 1.48.94.192/27 via 1.48.94.161
+#ip route add 1.48.94.128/27 via 1.48.94.161
+
+#ip route add 192.168.86.192/26 via 1.48.94.97
+#ip route add 192.168.86.128/26 via 1.48.94.97
+
+#Routage dynamique
+service quagga start
+sleep 1
+
+# Filtrages
+
+# Refuser tous les trafics
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+# Accepter le ping
+iptables -A INPUT -p icmp -j ACCEPT
+iptables -A OUTPUT -p icmp -j ACCEPT
+iptables -A FORWARD -p icmp -j ACCEPT
+
+# Accepter le trafic UDP du serveur RIP
+iptables -A INPUT -p udp --dport 520 -j ACCEPT
+iptables -A OUTPUT -p udp --sport 520 -j ACCEPT
+iptables -A FORWARD -p udp --dport 520 -j ACCEPT
+
+# Accepter le trafic UDP du serveur DNS
+iptables -t filter -A FORWARD -p udp --dport 53 -j ACCEPT
+iptables -t filter -A FORWARD -p udp --sport 53 -j ACCEPT
+
+# Accepter le trafic TCP du serveur HTTP
+iptables -t filter -A FORWARD -p tcp --dport 80 -j ACCEPT
+iptables -t filter -A FORWARD -p tcp --sport 80 -j ACCEPT
+
+
+

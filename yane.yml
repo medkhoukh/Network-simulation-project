@@ -1,0 +1,82 @@
+network:
+  name: KHOUKH_mohammed
+  version: 0.1
+  hosts:
+    - User_1
+      mode : netns
+      init : ./scripts/User_1
+ 
+    - User_2
+      mode : netns
+      init : ./scripts/User_2
+ 
+    - box_1
+      mode : docker
+      image : dhcp_n7:latest
+      files : ./files/box_1/etc:/
+ 
+    - box_2
+      mode : docker
+      image : dhcp_n7:latest
+      files : ./files/box_2/etc:/
+ 
+    - serveur_web_user
+      mode : docker
+      image : apache_n7:latest
+      files : ./files/serveur_web_user/var:/
+ 
+    - Routeur_FAI
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Routeur_FAI/etc:/
+ 
+    - Routeur_1
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Routeur_1/etc:/
+ 
+    - Routeur_2
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Routeur_2/etc:/
+ 
+    - Routeur_services
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Routeur_services/etc:/
+ 
+    - Routeur_services_reseau
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Routeur_services_reseau/etc:/
+ 
+    - serveur_web
+      mode : docker
+      image : apache_n7:latest
+      files : ./files/serveur_web/var:/
+ 
+    - serveur_dns
+      mode : docker
+      image : dns_n7:latest
+      files : ./files/serveur_dns/etc:/
+ 
+ 
+ 
+  links :
+    - User_1:eth0!box_1:eth0
+    - box_1:eth1!Routeur_FAI:eth0
+    - box_2:eth1!Routeur_FAI:eth1
+    - Routeur_services_reseau:eth1!Routeur_services:eth1
+    - Routeur_1:eth1!Routeur_services:eth0
+    - Routeur_2:eth1!Routeur_services_reseau:eth0
+    - Routeur_services:eth2!serveur_web:eth0
+    - Routeur_services_reseau:eth2!serveur_dns:eth0
+ 
+  bridges:
+    - Switch0
+      interfaces: box_2:eth0!User_2:eth0!serveur_web_user:eth0!
+    - Switch1
+      interfaces: Routeur_1:eth0!Routeur_2:eth0!Routeur_FAI:eth2!
+ 
+  consoles :
+    - all

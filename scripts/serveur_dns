@@ -1,0 +1,37 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 1.48.94.194/27 dev eth0
+
+#Routage Statique
+#ip route add 1.48.94.128/27 via 1.48.94.193
+#ip route add 1.48.94.160/27 via 1.48.94.193
+#ip route add 1.48.94.0/27 via 1.48.94.193
+#ip route add 1.48.94.96/27 via 1.48.94.193
+#ip route add 1.48.94.224/27 via 1.48.94.193
+#ip route add 1.48.94.32/27 via 1.48.94.193
+#ip route add 1.48.94.64/27 via 1.48.94.193
+#ip route add 192.168.86.192/26 via 1.48.94.193
+#ip route add 192.168.86.128/26 via 1.48.94.193
+
+#Route par defaut
+ip route add default via 1.48.94.193
+
+
+# Activer le service BIND9
+service bind9 start
+
+# Donner les permissions
+chmod -R 755 /etc/bind
+chown -R bind:bind /etc/bind
+
+# Redémarrer le service
+service bind9 restart
+
+# Tester la configuration
+named-checkconf /etc/bind/named.conf
+named-checkconf /etc/bind/named.conf.local
+named-checkzone monsupersite.com /etc/bind/zones/monsupersite.db
+named-checkzone khoukh.com /etc/bind/zones/khoukh.db
+
+
+

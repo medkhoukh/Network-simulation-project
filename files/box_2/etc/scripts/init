@@ -1,0 +1,50 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 192.168.86.193/26 dev eth0
+ip link set dev eth1 up
+ip addr add 1.48.94.66/27 dev eth1
+
+#Routage statique
+#ip route add 1.48.94.0/27 via 1.48.94.65
+#ip route add 1.48.94.96/27 via 1.48.94.65
+#ip route add 1.48.94.224/27 via 1.48.94.65
+#ip route add 1.48.94.160/27 via 1.48.94.65
+#ip route add 1.48.94.128/27 via 1.48.94.65
+#ip route add 1.48.94.192/27 via 1.48.94.65
+#ip route add 1.48.94.32/27 via 1.48.94.65
+#ip route add 192.168.86.128/26 via 1.48.94.65
+
+#dhcp
+service isc-dhcp-server start
+# mise en place du nat
+iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
+
+# route par defaut
+ip route add default via 1.48.94.65
+
+# intiqlisation des regles de filtrage
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+# regle de filtrage
+iptables -t filter -A OUTPUT -p icmp -j ACCEPT
+iptables -t filter -A INPUT -p icmp -j ACCEPT
+iptables -t filter -A FORWARD -p icmp -j ACCEPT
+
+# regle de filtrqage DHCP
+iptables  -A INPUT -i eth0 -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+
+# regle de filtrqge DNS
+iptables -t filter -A FORWARD -p udp --dport 53 -j ACCEPT
+iptables -t filter -A FORWARD -p udp --sport 53 -j ACCEPT
+
+# regle de filtrage HTTP
+iptables -t filter -A FORWARD -p tcp --dport 80 -j ACCEPT
+iptables -t filter -A FORWARD -p tcp --sport 80 -j ACCEPT
+
+
+
+
+
+

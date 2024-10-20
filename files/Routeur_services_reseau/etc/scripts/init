@@ -1,0 +1,27 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 1.48.94.130/27 dev eth0
+ip link set dev eth1 up
+ip addr add 1.48.94.161/27 dev eth1
+ip link set dev eth2 up
+ip addr add 1.48.94.193/27 dev eth2
+
+
+#Routage Statique
+#ip route add 1.48.94.0/27 via 1.48.94.129
+#ip route add 1.48.94.224/27 via 1.48.94.162
+#ip route add 1.48.94.96/27 via 1.48.94.162
+#ip route add 1.48.94.32/27 via 1.48.94.129
+#ip route add 1.48.94.64/27 via 1.48.94.129
+
+#ip route add 192.168.86.192/26 via 1.48.94.129
+#ip route add 192.168.86.128/26 via 1.48.94.129
+
+#Routage Dynamique
+service quagga start
+sleep 1
+
+
+
+
+
